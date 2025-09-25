@@ -1,10 +1,13 @@
 package co.edu.uceva.restaurantservice.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "usuario")
 public class Usuario {
     
@@ -25,6 +28,7 @@ public class Usuario {
     private String telUsuario;
     
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
     
     @Column(name = "est_usuario", nullable = false)

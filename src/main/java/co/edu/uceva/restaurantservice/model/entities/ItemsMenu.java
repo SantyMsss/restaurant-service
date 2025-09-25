@@ -1,9 +1,11 @@
 package co.edu.uceva.restaurantservice.model.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "items_menu")
 public class ItemsMenu {
     

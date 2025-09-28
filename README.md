@@ -219,8 +219,348 @@ Los controladores usan prefijos con versión `v1` y un sufijo por dominio de neg
 ## Códigos de estado
 - 200 OK: Operación exitosa.
 - 404 Not Found: Recurso no encontrado.
-- 400 Bad Request: (No implementado explícitamente, podría añadirse con validaciones).
+- 400 Bad Request: Datos inválidos o campos requeridos faltantes.
 - 401 Unauthorized: Credenciales inválidas (aplica al endpoint de login).
+- 500 Internal Server Error: Error interno del servidor.
+
+## 🧪 Ejemplos de pruebas para Postman
+
+A continuación se presentan ejemplos completos para probar los endpoints principales usando Postman o cualquier cliente HTTP.
+
+### 👤 Usuarios
+
+#### ✅ Crear Usuario
+```http
+POST http://localhost:8080/api/v1/usuario-service/usuario
+Content-Type: application/json
+
+{
+    "nomUsuario": "Juan Pérez",
+    "emailUsuario": "juan.perez@example.com",
+    "rolUsuario": "CLIENTE",
+    "telUsuario": "3001234567",
+    "password": "miPassword123",
+    "estUsuario": "ACTIVO"
+}
+```
+
+#### 🔄 Actualizar Usuario
+```http
+PUT http://localhost:8080/api/v1/usuario-service/usuario
+Content-Type: application/json
+
+{
+    "id": 1,
+    "nomUsuario": "Juan Pérez Actualizado",
+    "emailUsuario": "juan.nuevo@example.com",
+    "rolUsuario": "ADMIN",
+    "telUsuario": "3009876543",
+    "password": "nuevoPassword456",
+    "estUsuario": "ACTIVO"
+}
+```
+
+#### 📖 Listar Usuarios
+```http
+GET http://localhost:8080/api/v1/usuario-service/usuarios
+```
+
+#### 🔍 Buscar Usuario por Email
+```http
+GET http://localhost:8080/api/v1/usuario-service/usuarios/email?email=juan@mail.com
+```
+
+#### 🔐 Login
+```http
+POST http://localhost:8080/api/v1/usuario-service/login?email=juan@mail.com&password=password123
+```
+
+### 🏪 Restaurantes
+
+#### ✅ Crear Restaurante
+```http
+POST http://localhost:8080/api/v1/restaurante-service/restaurante
+Content-Type: application/json
+
+{
+    "nombre": "Restaurante Nuevo",
+    "direccion": "Calle 123 No 45-67",
+    "telefono": "2234567890"
+}
+```
+
+#### 📖 Listar Restaurantes
+```http
+GET http://localhost:8080/api/v1/restaurante-service/restaurantes
+```
+
+#### 🔍 Obtener Restaurante por ID
+```http
+GET http://localhost:8080/api/v1/restaurante-service/restaurantes/1
+```
+
+### 🪑 Mesas
+
+#### ✅ Crear Mesa
+```http
+POST http://localhost:8080/api/v1/mesa-service/mesa
+Content-Type: application/json
+
+{
+    "numSillas": 4,
+    "estMesa": true,
+    "codMesa": "MESA999",
+    "restaurante": {
+        "id": 1
+    }
+}
+```
+
+#### 🔄 Actualizar Mesa
+```http
+PUT http://localhost:8080/api/v1/mesa-service/mesa
+Content-Type: application/json
+
+{
+    "id": 1,
+    "numSillas": 6,
+    "estMesa": false,
+    "codMesa": "MESA001",
+    "restaurante": {
+        "id": 1
+    }
+}
+```
+
+#### 📖 Listar Mesas
+```http
+GET http://localhost:8080/api/v1/mesa-service/mesas
+```
+
+#### 🔍 Mesas por Restaurante
+```http
+GET http://localhost:8080/api/v1/mesa-service/mesas/restaurante/1
+```
+
+#### ✅ Mesas Disponibles
+```http
+GET http://localhost:8080/api/v1/mesa-service/mesas/disponibles/restaurante/1
+```
+
+### 📅 Reservas
+
+#### ✅ Crear Reserva
+```http
+POST http://localhost:8080/api/v1/reserva-service/reserva
+Content-Type: application/json
+
+{
+    "mesa": {
+        "id": 1
+    },
+    "usuario": {
+        "id": 1
+    },
+    "fechReserva": "2025-12-25T19:00:00",
+    "estReserva": "ACTIVA"
+}
+```
+
+#### 📖 Listar Reservas
+```http
+GET http://localhost:8080/api/v1/reserva-service/reservas
+```
+
+#### 🔍 Reservas por Usuario
+```http
+GET http://localhost:8080/api/v1/reserva-service/reservas/usuario/1
+```
+
+### 🍽️ Categorías de Menú
+
+#### ✅ Crear Categoría
+```http
+POST http://localhost:8080/api/v1/categoria-menu-service/categoria
+Content-Type: application/json
+
+{
+    "nombre": "Postres",
+    "imgCatMenu": "postres.jpg",
+    "restaurante": {
+        "id": 1
+    }
+}
+```
+
+#### 📖 Categorías por Restaurante
+```http
+GET http://localhost:8080/api/v1/categoria-menu-service/categorias/restaurante/1
+```
+
+### 🍕 Items de Menú
+
+#### ✅ Crear Item
+```http
+POST http://localhost:8080/api/v1/items-menu-service/item
+Content-Type: application/json
+
+{
+    "nomItem": "Pizza Margherita",
+    "precItem": 15000.0,
+    "descItem": "Pizza tradicional con tomate y mozzarella",
+    "estItem": true,
+    "imgItemMenu": "pizza.jpg",
+    "categoriaMenu": {
+        "id": 1
+    }
+}
+```
+
+#### 📖 Items por Categoría
+```http
+GET http://localhost:8080/api/v1/items-menu-service/items/categoria/1
+```
+
+#### 💰 Items por Rango de Precio
+```http
+GET http://localhost:8080/api/v1/items-menu-service/items/precio?min=10000&max=20000
+```
+
+### 🛍️ Pedidos
+
+#### ✅ Crear Pedido
+```http
+POST http://localhost:8080/api/v1/pedido-service/pedido
+Content-Type: application/json
+
+{
+    "usuario": {
+        "id": 1
+    },
+    "reserva": {
+        "id": 1
+    },
+    "estPedido": "PENDIENTE",
+    "preTotPedido": 25000.0
+}
+```
+
+#### 📖 Pedidos por Usuario
+```http
+GET http://localhost:8080/api/v1/pedido-service/pedidos/usuario/1
+```
+
+#### 🔍 Pedidos Pendientes
+```http
+GET http://localhost:8080/api/v1/pedido-service/pedidos/pendientes
+```
+
+### 🧾 Detalle de Pedido
+
+#### ✅ Crear Detalle
+```http
+POST http://localhost:8080/api/v1/detalle-pedido-service/detalle
+Content-Type: application/json
+
+{
+    "pedido": {
+        "id": 1
+    },
+    "itemMenu": {
+        "id": 1
+    },
+    "cantItem": 2,
+    "precUnitario": 8000.0,
+    "subtotal": 16000.0
+}
+```
+
+#### 📖 Detalles por Pedido
+```http
+GET http://localhost:8080/api/v1/detalle-pedido-service/detalles/pedido/1
+```
+
+### 🚗 Parqueaderos
+
+#### ✅ Crear Parqueadero
+```http
+POST http://localhost:8080/api/v1/parqueadero-service/parqueadero
+Content-Type: application/json
+
+{
+    "codParqueadero": "PARK999",
+    "estParqueadero": true,
+    "restaurante": {
+        "id": 1
+    }
+}
+```
+
+#### 📖 Parqueaderos por Restaurante
+```http
+GET http://localhost:8080/api/v1/parqueadero-service/parqueaderos/restaurante/1
+```
+
+### 🤖 Chatbot
+
+#### ✅ Crear Interacción
+```http
+POST http://localhost:8080/api/v1/chatbot-service/chat
+Content-Type: application/json
+
+{
+    "restaurantId": 1,
+    "usuario": {
+        "id": 1
+    },
+    "input": "¿Cuál es el horario de atención?",
+    "respuesta": "Atendemos de lunes a domingo de 11:00 AM a 10:00 PM"
+}
+```
+
+### ⚠️ Casos de Error para Validar
+
+#### ❌ Usuario sin password (Error 400)
+```http
+POST http://localhost:8080/api/v1/usuario-service/usuario
+Content-Type: application/json
+
+{
+    "nomUsuario": "Test Sin Password",
+    "emailUsuario": "sinpass@example.com",
+    "rolUsuario": "CLIENTE",
+    "estUsuario": "ACTIVO"
+}
+```
+
+#### ❌ Mesa con restaurante inexistente (Error 400)
+```http
+POST http://localhost:8080/api/v1/mesa-service/mesa
+Content-Type: application/json
+
+{
+    "numSillas": 4,
+    "estMesa": true,
+    "codMesa": "MESA888",
+    "restaurante": {
+        "id": 999
+    }
+}
+```
+
+#### ❌ Login con credenciales incorrectas (Error 401)
+```http
+POST http://localhost:8080/api/v1/usuario-service/login?email=noexiste@mail.com&password=wrongpassword
+```
+
+### 📝 Notas Importantes
+
+1. **Content-Type**: Siempre incluir `Content-Type: application/json` en peticiones POST/PUT
+2. **IDs**: Los IDs se generan automáticamente, no los incluyas en peticiones POST
+3. **Relaciones**: Para crear entidades relacionadas, solo envía el ID del objeto relacionado
+4. **Fechas**: Usar formato ISO 8601: `yyyy-MM-ddTHH:mm:ss`
+5. **Estados**: Los estados deben coincidir con los valores definidos en las entidades
+6. **Validaciones**: La API valida campos requeridos y retorna errores descriptivos
 
 ## Variables de entorno / Configuración
 Archivo `application.properties` (ejemplo esperado para PostgreSQL):

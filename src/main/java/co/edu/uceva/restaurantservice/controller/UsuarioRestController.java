@@ -25,11 +25,73 @@ public class UsuarioRestController {
         return u != null ? ResponseEntity.ok(u) : ResponseEntity.notFound().build();
     }
 
-    @PostMapping("/usuario")
-    public Usuario crear(@RequestBody Usuario usuario) { return usuarioService.save(usuario); }
+    @PostMapping(value = "/usuario", 
+                consumes = {"application/json", "application/json;charset=UTF-8"}, 
+                produces = {"application/json", "application/json;charset=UTF-8"})
+    public ResponseEntity<Usuario> crear(@RequestBody Usuario usuario) { 
+        try {
+            // Validar campos requeridos
+            if (usuario.getNomUsuario() == null || usuario.getNomUsuario().trim().isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+            if (usuario.getEmailUsuario() == null || usuario.getEmailUsuario().trim().isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+            if (usuario.getPassword() == null || usuario.getPassword().trim().isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+            if (usuario.getRolUsuario() == null || usuario.getRolUsuario().trim().isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+            if (usuario.getEstUsuario() == null || usuario.getEstUsuario().trim().isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+            
+            Usuario usuarioGuardado = usuarioService.save(usuario);
+            return ResponseEntity.ok(usuarioGuardado);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 
-    @PutMapping("/usuario")
-    public Usuario actualizar(@RequestBody Usuario usuario) { return usuarioService.save(usuario); }
+    @PutMapping(value = "/usuario", 
+               consumes = {"application/json", "application/json;charset=UTF-8"}, 
+               produces = {"application/json", "application/json;charset=UTF-8"})
+    public ResponseEntity<Usuario> actualizar(@RequestBody Usuario usuario) { 
+        try {
+            // Validar que el usuario existe para actualización
+            if (usuario.getId() == null) {
+                return ResponseEntity.badRequest().build();
+            }
+            
+            Usuario usuarioExistente = usuarioService.findById(usuario.getId());
+            if (usuarioExistente == null) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            // Validar campos requeridos
+            if (usuario.getNomUsuario() == null || usuario.getNomUsuario().trim().isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+            if (usuario.getEmailUsuario() == null || usuario.getEmailUsuario().trim().isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+            if (usuario.getPassword() == null || usuario.getPassword().trim().isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+            if (usuario.getRolUsuario() == null || usuario.getRolUsuario().trim().isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+            if (usuario.getEstUsuario() == null || usuario.getEstUsuario().trim().isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+            
+            Usuario usuarioActualizado = usuarioService.save(usuario);
+            return ResponseEntity.ok(usuarioActualizado);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 
     @DeleteMapping("/usuarios/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Integer id) {

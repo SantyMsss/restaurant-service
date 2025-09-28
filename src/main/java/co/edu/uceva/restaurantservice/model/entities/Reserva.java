@@ -27,13 +27,13 @@ public class Reserva {
     // Relación muchos a uno con Mesa
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mesa_id", insertable = false, updatable = false)
-    @JsonBackReference
+    @JsonBackReference("mesa-reservas")
     private Mesa mesa;
     
     // Relación muchos a uno con Usuario
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", insertable = false, updatable = false)
-    @JsonBackReference
+    @JsonBackReference("usuario-reservas")
     private Usuario usuario;
     
     // Constructores

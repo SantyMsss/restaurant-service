@@ -20,7 +20,15 @@ public class UsuarioServiceImpl implements IUsuarioService {
     public Usuario findById(Integer id) { return usuarioDao.findById(id).orElse(null); }
 
     @Override
-    public Usuario save(Usuario usuario) { return usuarioDao.save(usuario); }
+    public Usuario save(Usuario usuario) { 
+        // Validar que no exista otro usuario con el mismo email (excepto si es actualización del mismo)
+        Usuario usuarioExistente = usuarioDao.findByEmailUsuario(usuario.getEmailUsuario()).orElse(null);
+        if (usuarioExistente != null && !usuarioExistente.getId().equals(usuario.getId())) {
+            throw new RuntimeException("Ya existe un usuario con el email: " + usuario.getEmailUsuario());
+        }
+        
+        return usuarioDao.save(usuario); 
+    }
 
     @Override
     public void delete(Integer id) { usuarioDao.deleteById(id); }

@@ -20,7 +20,7 @@ public class Parqueadero {
     // Relación muchos a uno con Restaurante
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurante_id", nullable = false)
-    @JsonBackReference
+    @JsonBackReference("restaurante-parqueaderos")
     private Restaurante restaurante;
     
     // Constructores

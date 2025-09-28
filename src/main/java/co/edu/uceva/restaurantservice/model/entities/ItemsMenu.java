@@ -31,7 +31,7 @@ public class ItemsMenu {
     // Relación muchos a uno con CategoriaMenu
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoria_menu_id", nullable = false)
-    @JsonBackReference
+    @JsonBackReference("categoria-items")
     private CategoriaMenu categoriaMenu;
     
     // Constructores

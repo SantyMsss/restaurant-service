@@ -28,7 +28,7 @@ public class Usuario {
     private String telUsuario;
     
     @Column(nullable = false)
-    @JsonIgnore
+    @com.fasterxml.jackson.annotation.JsonProperty(access = com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY)
     private String password;
     
     @Column(name = "est_usuario", nullable = false)
@@ -36,12 +36,12 @@ public class Usuario {
     
     // Relación uno a muchos con Reserva
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @JsonManagedReference("usuario-reservas")
     private List<Reserva> reservas;
     
     // Relación uno a muchos con Pedido
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @JsonManagedReference("usuario-pedidos")
     private List<Pedido> pedidos;
     
     // Constructores

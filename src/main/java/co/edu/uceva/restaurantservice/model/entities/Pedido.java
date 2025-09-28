@@ -31,12 +31,12 @@ public class Pedido {
     // Relación muchos a uno con Usuario
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", insertable = false, updatable = false)
-    @JsonBackReference
+    @JsonBackReference("usuario-pedidos")
     private Usuario usuario;
     
     // Relación uno a muchos con DetallePedido
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @JsonManagedReference("pedido-detalles")
     private List<DetallePedido> detallesPedido;
     
     // Constructores

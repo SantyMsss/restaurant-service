@@ -44,9 +44,18 @@ public class MesaRestController {
      * @param mesa Datos de la mesa
      * @return Mesa creada
      */
-    @PostMapping("/mesa")
-    public Mesa guardarMesa(@RequestBody Mesa mesa) {
-        return mesaService.save(mesa);
+    @PostMapping(value = "/mesa", 
+                consumes = {"application/json", "application/json;charset=UTF-8"}, 
+                produces = {"application/json", "application/json;charset=UTF-8"})
+    public ResponseEntity<?> guardarMesa(@RequestBody Mesa mesa) {
+        try {
+            Mesa mesaGuardada = mesaService.save(mesa);
+            return ResponseEntity.ok(mesaGuardada);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("Error al crear mesa: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error interno del servidor");
+        }
     }
     
     /**
@@ -54,9 +63,27 @@ public class MesaRestController {
      * @param mesa Datos actualizados de la mesa
      * @return Mesa actualizada
      */
-    @PutMapping("/mesa")
-    public Mesa actualizarMesa(@RequestBody Mesa mesa) {
-        return mesaService.save(mesa);
+    @PutMapping(value = "/mesa", 
+               consumes = {"application/json", "application/json;charset=UTF-8"}, 
+               produces = {"application/json", "application/json;charset=UTF-8"})
+    public ResponseEntity<?> actualizarMesa(@RequestBody Mesa mesa) {
+        try {
+            if (mesa.getId() == null) {
+                return ResponseEntity.badRequest().body("El ID es requerido para actualizar una mesa");
+            }
+            
+            Mesa mesaExistente = mesaService.findById(mesa.getId());
+            if (mesaExistente == null) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            Mesa mesaActualizada = mesaService.save(mesa);
+            return ResponseEntity.ok(mesaActualizada);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("Error al actualizar mesa: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error interno del servidor");
+        }
     }
     
     /**

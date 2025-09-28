@@ -1,11 +1,12 @@
 package co.edu.uceva.restaurantservice.model.entities;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
 @Table(name = "restaurante")
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Restaurante {
     
     @Id
@@ -23,17 +24,17 @@ public class Restaurante {
     
     // Relación uno a muchos con Mesa
     @OneToMany(mappedBy = "restaurante", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<Mesa> mesas;
     
     // Relación uno a muchos con Parqueadero
     @OneToMany(mappedBy = "restaurante", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<Parqueadero> parqueaderos;
     
     // Relación uno a muchos con Categoria_Menu
     @OneToMany(mappedBy = "restaurante", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<CategoriaMenu> categoriasMenu;
     
     // Constructores

@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/restaurante-service")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class RestauranteRestController {
     
     @Autowired
@@ -44,9 +44,21 @@ public class RestauranteRestController {
      * @param restaurante Datos del restaurante
      * @return Restaurante creado
      */
-    @PostMapping("/restaurante")
-    public Restaurante guardarRestaurante(@RequestBody Restaurante restaurante) {
-        return restauranteService.save(restaurante);
+    @PostMapping(value = "/restaurante", 
+                consumes = {"application/json", "application/json;charset=UTF-8"}, 
+                produces = {"application/json", "application/json;charset=UTF-8"})
+    public ResponseEntity<Restaurante> guardarRestaurante(@RequestBody Restaurante restaurante) {
+        try {
+            // Limpiar las relaciones para evitar problemas de serialización
+            restaurante.setMesas(null);
+            restaurante.setParqueaderos(null);
+            restaurante.setCategoriasMenu(null);
+            
+            Restaurante restauranteGuardado = restauranteService.save(restaurante);
+            return ResponseEntity.ok(restauranteGuardado);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
     
     /**
@@ -54,9 +66,21 @@ public class RestauranteRestController {
      * @param restaurante Datos actualizados del restaurante
      * @return Restaurante actualizado
      */
-    @PutMapping("/restaurante")
-    public Restaurante actualizarRestaurante(@RequestBody Restaurante restaurante) {
-        return restauranteService.save(restaurante);
+    @PutMapping(value = "/restaurante", 
+               consumes = {"application/json", "application/json;charset=UTF-8"}, 
+               produces = {"application/json", "application/json;charset=UTF-8"})
+    public ResponseEntity<Restaurante> actualizarRestaurante(@RequestBody Restaurante restaurante) {
+        try {
+            // Limpiar las relaciones para evitar problemas de serialización
+            restaurante.setMesas(null);
+            restaurante.setParqueaderos(null);
+            restaurante.setCategoriasMenu(null);
+            
+            Restaurante restauranteActualizado = restauranteService.save(restaurante);
+            return ResponseEntity.ok(restauranteActualizado);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
     
     /**

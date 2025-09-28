@@ -24,12 +24,12 @@ public class CategoriaMenu {
     // Relación muchos a uno con Restaurante
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurante_id", nullable = false)
-    @JsonBackReference
+    @JsonBackReference("restaurante-categorias")
     private Restaurante restaurante;
     
     // Relación uno a muchos con Items_Menu
     @OneToMany(mappedBy = "categoriaMenu", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @JsonManagedReference("categoria-items")
     private List<ItemsMenu> itemsMenu;
     
     // Constructores

@@ -31,7 +31,7 @@ public class DetallePedido {
     // Relación muchos a uno con Pedido
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pedido_id", insertable = false, updatable = false)
-    @JsonBackReference
+    @JsonBackReference("pedido-detalles")
     private Pedido pedido;
     
     // Relación muchos a uno con ItemsMenu

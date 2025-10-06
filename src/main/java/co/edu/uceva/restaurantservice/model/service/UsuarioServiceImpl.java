@@ -2,6 +2,7 @@ package co.edu.uceva.restaurantservice.model.service;
 
 import co.edu.uceva.restaurantservice.model.dao.UsuarioDao;
 import co.edu.uceva.restaurantservice.model.entities.Usuario;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,8 +11,12 @@ import java.util.List;
 public class UsuarioServiceImpl implements IUsuarioService {
 
     private final UsuarioDao usuarioDao;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioServiceImpl(UsuarioDao usuarioDao) { this.usuarioDao = usuarioDao; }
+    public UsuarioServiceImpl(UsuarioDao usuarioDao, PasswordEncoder passwordEncoder) { 
+        this.usuarioDao = usuarioDao; 
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public List<Usuario> listar() { return usuarioDao.findAll(); }
@@ -27,7 +32,23 @@ public class UsuarioServiceImpl implements IUsuarioService {
             throw new RuntimeException("Ya existe un usuario con el email: " + usuario.getEmailUsuario());
         }
         
+        // Encriptar la contraseña antes de guardar
+        if (usuario.getPassword() != null && !usuario.getPassword().isEmpty()) {
+            // Solo encriptar si la contraseña no está ya encriptada (para evitar doble encriptación en updates)
+            if (!isPasswordEncrypted(usuario.getPassword())) {
+                usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+            }
+        }
+        
         return usuarioDao.save(usuario); 
+    }
+    
+    /**
+     * Verifica si una contraseña ya está encriptada con BCrypt
+     * Las contraseñas de BCrypt siempre empiezan con $2a$, $2b$, $2x$ o $2y$
+     */
+    private boolean isPasswordEncrypted(String password) {
+        return password != null && password.matches("^\\$2[abyxy]\\$.*");
     }
 
     @Override
@@ -37,7 +58,17 @@ public class UsuarioServiceImpl implements IUsuarioService {
     public Usuario findByEmail(String email) { return usuarioDao.findByEmailUsuario(email).orElse(null); }
 
     @Override
-    public Usuario login(String email, String password) { return usuarioDao.findByEmailUsuarioAndPassword(email, password).orElse(null); }
+    public Usuario login(String email, String password) { 
+        // Buscar usuario por email
+        Usuario usuario = usuarioDao.findByEmailUsuario(email).orElse(null);
+        
+        // Si el usuario existe y la contraseña coincide
+        if (usuario != null && passwordEncoder.matches(password, usuario.getPassword())) {
+            return usuario;
+        }
+        
+        return null;
+    }
 
     @Override
     public List<Usuario> findByRol(String rol) { return usuarioDao.findByRolUsuario(rol); }

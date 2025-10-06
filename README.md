@@ -573,11 +573,79 @@ spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.format_sql=true
 ```
 
+## 🔐 Seguridad con BCrypt
+
+### Implementación de BCrypt para contraseñas
+
+El sistema implementa BCrypt para el hash seguro de contraseñas de usuarios, proporcionando seguridad de nivel producción.
+
+### ✅ Componentes implementados:
+
+#### 1. **Dependencia agregada**
+- `spring-security-crypto` en [`pom.xml`](pom.xml)
+
+#### 2. **Configuración creada**
+- `PasswordConfig.java` con bean de `BCryptPasswordEncoder`
+
+#### 3. **Service modificado**
+- [`UsuarioServiceImpl.java`](src/main/java/co/edu/uceva/restaurantservice/model/service/UsuarioServiceImpl.java) actualizado con:
+  - **Inyección de `PasswordEncoder`**
+  - **Método `save()`** con encriptación automática de contraseñas
+  - **Prevención de duplicados** por email
+  - **Método `login()`** con verificación BCrypt usando `passwordEncoder.matches()`
+  - **Método helper `isPasswordEncrypted()`** para detectar si ya está hasheada
+
+#### 4. **Script SQL creado**
+- `update_passwords_bcrypt.sql` para migrar contraseñas existentes
+
+### 🛡️ Características de seguridad implementadas:
+
+- **✅ Encriptación automática**: Todas las contraseñas nuevas se encriptan con BCrypt
+- **✅ Verificación segura**: El login usa `passwordEncoder.matches()` en lugar de comparación directa
+- **✅ Prevención de duplicados**: No permite crear usuarios con emails existentes
+- **✅ Detección inteligente**: Solo encripta contraseñas que no están ya hasheadas
+
+### 🧪 Cómo probar la funcionalidad:
+
+#### Crear nuevo usuario (contraseña se encripta automáticamente):
+```http
+POST http://localhost:8080/api/v1/usuario-service/usuario
+Content-Type: application/json
+
+{
+    "nomUsuario": "Usuario Test",
+    "emailUsuario": "test@example.com",
+    "rolUsuario": "CLIENTE",
+    "telUsuario": "3001234567",
+    "password": "miPasswordTextoPlano",
+    "estUsuario": "ACTIVO"
+}
+```
+
+#### Login con contraseña encriptada:
+```http
+POST http://localhost:8080/api/v1/usuario-service/login?email=test@example.com&password=miPasswordTextoPlano
+```
+
+### 📋 Verificaciones de estado:
+
+- ✅ **Compilación exitosa**
+- ✅ **Inicio de aplicación sin errores**
+- ✅ **Base de datos inicializada correctamente**
+- ✅ **Contraseñas nunca se almacenan en texto plano**
+
+### ⚠️ Importante:
+
+1. **Las contraseñas se hashean automáticamente** al crear o actualizar usuarios
+2. **El login verifica de forma segura** usando BCrypt
+3. **No es posible recuperar contraseñas en texto plano** desde la base de datos
+4. **Los hashes BCrypt son únicos** incluso para la misma contraseña
+
+**¡Tu API ahora tiene seguridad de contraseñas nivel producción con BCrypt!** 🔐
+
 ## Ejecución local
 1. Asegúrate de tener PostgreSQL en ejecución y la base de datos creada.
 2. Configura las credenciales en `application.properties`.
 3. Compila y ejecuta:
 ```bash
 mvn spring-boot:run
-```
-

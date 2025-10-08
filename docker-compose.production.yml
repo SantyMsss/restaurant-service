@@ -1,0 +1,85 @@
+# ========================================
+# Docker Compose para DISTRIBUCIÓN
+# ========================================
+# Este archivo permite ejecutar la app en cualquier máquina
+# sin necesidad de tener el código fuente
+# Solo necesitas este archivo y ejecutar: docker-compose up
+# ========================================
+
+version: '3.8'
+
+services:
+  # Base de datos PostgreSQL
+  postgres:
+    container_name: restaurant-postgres
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: restaurant
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 0809
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - restaurant-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Aplicación Spring Boot
+  # IMPORTANTE: Cambia "restaurant-service-app:latest" por tu imagen en Docker Hub
+  # Ejemplo: "tunombre/restaurant-service:1.0.0"
+  app:
+    container_name: restaurant-app
+    # OPCIÓN 1: Usar imagen pre-construida local
+    image: restaurant-service-app:latest
+    
+    # OPCIÓN 2: Descomentar para usar desde Docker Hub (cuando la publiques)
+    # image: tunombre/restaurant-service:1.0.0
+    
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # Configuración de la base de datos
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/restaurant
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 0809
+      
+      # Configuración de JPA
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
+      SPRING_JPA_SHOW_SQL: "true"
+      SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: "true"
+      
+      # Configuración de la aplicación
+      SPRING_APPLICATION_NAME: restaurant-service
+      SERVER_PORT: 8080
+      
+      # Opciones de JVM
+      JAVA_OPTS: "-Xms256m -Xmx512m -XX:+UseG1GC"
+    networks:
+      - restaurant-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+# Redes
+networks:
+  restaurant-network:
+    driver: bridge
+
+# Volúmenes persistentes
+volumes:
+  postgres_data:
+    driver: local

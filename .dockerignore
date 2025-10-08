@@ -1,0 +1,37 @@
+# Ignorar archivos compilados
+target/
+*.class
+
+# Ignorar archivos de configuración del IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# Ignorar archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Ignorar archivos de Git
+.git/
+.gitignore
+
+# Ignorar archivos de logs
+*.log
+
+# Ignorar archivos temporales
+*.tmp
+*.temp
+
+# Ignorar archivos de Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Ignorar documentación
+README.md
+*.md
+
+# Ignorar archivos de pruebas generados
+test-output/
